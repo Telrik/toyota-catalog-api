@@ -1,0 +1,741 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Toyota Catalog Identification API",
+    "version": "1.1.0",
+    "summary": "Compact VIN/frame and vehicle selector API.",
+    "description": "Minimal API for a ToyoDIY-style vehicle identification screen. The vin field accepts either a VIN or frame value. The selector endpoint uses three main optional filters: region, year, and model. When all three are selected it also returns model-code rows and variable characteristic filters."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ],
+  "paths": {
+    "/identify": {
+      "get": {
+        "operationId": "identify",
+        "summary": "Search by VIN or frame",
+        "parameters": [
+          {
+            "name": "vin",
+            "in": "query",
+            "required": true,
+            "description": "VIN or frame value from the single search box.",
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 32,
+              "pattern": "^[A-HJ-NPR-Z0-9-]+$"
+            },
+            "examples": {
+              "vin": {
+                "value": "LVGC616Z8NG101242"
+              },
+              "frame": {
+                "value": "ACV40-101242"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "VIN/frame lookup result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentifyResponse"
+                },
+                "example": {
+                  "vin": "LVGC616Z8NG101242",
+                  "status": "candidate",
+                  "message": "Use selector to confirm the vehicle.",
+                  "items": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/selector": {
+      "get": {
+        "operationId": "selector",
+        "summary": "Get next choices, characteristic filters, and model-code rows",
+        "description": "All parameters are optional. No parameters returns regions. region returns years. region plus year returns models. region plus year plus model returns model-code rows and any variable characteristic filters. The params query can carry selected characteristic values and narrows the model-code rows.",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NA",
+                "EU",
+                "JP",
+                "OTHER"
+              ]
+            },
+            "example": "EU"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 2006
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "COROLLA"
+          },
+          {
+            "name": "params",
+            "in": "query",
+            "description": "Optional characteristic filters as key:value pairs separated by commas, for example grade:SOL,body:SED,engine:1NDTV,transmission:MTM.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "grade:SOL,body:SED,engine:1NDTV"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Selector state. Depending on supplied parameters, returns regions, years, models, model codes, and variable characteristic filters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectorResponse"
+                },
+                "examples": {
+                  "regions": {
+                    "summary": "No parameters",
+                    "value": {
+                      "selected": {},
+                      "next": "region",
+                      "options": [
+                        {
+                          "value": "NA",
+                          "label": "North America"
+                        },
+                        {
+                          "value": "EU",
+                          "label": "Europe"
+                        },
+                        {
+                          "value": "JP",
+                          "label": "Japan"
+                        },
+                        {
+                          "value": "OTHER",
+                          "label": "Other"
+                        }
+                      ],
+                      "filters": [],
+                      "items": []
+                    }
+                  },
+                  "years": {
+                    "summary": "region=EU",
+                    "value": {
+                      "selected": {
+                        "region": "EU"
+                      },
+                      "next": "year",
+                      "options": [
+                        {
+                          "value": 2022,
+                          "label": "2022"
+                        },
+                        {
+                          "value": 2010,
+                          "label": "2010"
+                        },
+                        {
+                          "value": 2006,
+                          "label": "2006"
+                        },
+                        {
+                          "value": 1969,
+                          "label": "1969"
+                        }
+                      ],
+                      "filters": [],
+                      "items": []
+                    }
+                  },
+                  "models": {
+                    "summary": "region=EU&year=2006",
+                    "value": {
+                      "selected": {
+                        "region": "EU",
+                        "year": 2006
+                      },
+                      "next": "model",
+                      "options": [
+                        {
+                          "value": "AYGO",
+                          "label": "AYGO",
+                          "hint": "KGB10,WNB10"
+                        },
+                        {
+                          "value": "COROLLA",
+                          "label": "COROLLA",
+                          "hint": "NDE120,NZE120,ZZE12..."
+                        },
+                        {
+                          "value": "YARIS",
+                          "label": "YARIS",
+                          "hint": "KSP90,NCP9..."
+                        }
+                      ],
+                      "filters": [],
+                      "items": []
+                    }
+                  },
+                  "modelCodes": {
+                    "summary": "region=EU&year=2006&model=COROLLA",
+                    "value": {
+                      "selected": {
+                        "region": "EU",
+                        "year": 2006,
+                        "model": "COROLLA"
+                      },
+                      "next": null,
+                      "options": [],
+                      "filters": [
+                        {
+                          "code": "grade",
+                          "label": "GRADE",
+                          "options": [
+                            {
+                              "value": "SOL",
+                              "label": "SOL: SOL TYPE"
+                            },
+                            {
+                              "value": "TERRA",
+                              "label": "TERRA: TERRA TYPE"
+                            },
+                            {
+                              "value": "TSP",
+                              "label": "TSP: TOYOTA SPORTS TYPE"
+                            }
+                          ]
+                        },
+                        {
+                          "code": "product",
+                          "label": "PRODUCT",
+                          "options": [
+                            {
+                              "value": "JPP",
+                              "label": "JPP: JAPAN PRODUCT"
+                            },
+                            {
+                              "value": "UKP",
+                              "label": "UKP: EUROPE PRODUCT"
+                            }
+                          ]
+                        },
+                        {
+                          "code": "body",
+                          "label": "BODY",
+                          "options": [
+                            {
+                              "value": "HB",
+                              "label": "HB: HATCHBACK"
+                            },
+                            {
+                              "value": "SED",
+                              "label": "SED: SEDAN"
+                            },
+                            {
+                              "value": "WG",
+                              "label": "WG: WAGON"
+                            }
+                          ]
+                        },
+                        {
+                          "code": "driversPosition",
+                          "label": "DRIVER'S POSITION",
+                          "options": [
+                            {
+                              "value": "LHD",
+                              "label": "LHD: LEFT-HAND DRIVE"
+                            },
+                            {
+                              "value": "RHD",
+                              "label": "RHD: RIGHT-HAND DRIVE"
+                            }
+                          ]
+                        },
+                        {
+                          "code": "engine",
+                          "label": "ENGINE",
+                          "options": [
+                            {
+                              "value": "1NDTV",
+                              "label": "1NDTV: 2000CC DIESEL TURBO"
+                            },
+                            {
+                              "value": "1CDTV",
+                              "label": "1CDTV: 2000CC DIESEL TURBO"
+                            },
+                            {
+                              "value": "3ZZFE",
+                              "label": "3ZZFE: 1600CC 16-VALVE DOHC EFI"
+                            }
+                          ]
+                        },
+                        {
+                          "code": "fuelSystem",
+                          "label": "FUEL SYSTEM",
+                          "options": [
+                            {
+                              "value": "DCR",
+                              "label": "DCR: DIESEL COMMON RAIL INJECTION SYSTEM"
+                            },
+                            {
+                              "value": "HTWC",
+                              "label": "HTWC: HIGH EFFICIENCY TWIN CAM"
+                            },
+                            {
+                              "value": "TWC",
+                              "label": "TWC: TWIN CAM"
+                            }
+                          ]
+                        }
+                      ],
+                      "items": [
+                        {
+                          "vin": "JTDBC20..",
+                          "modelCode": "NDE120L-AHDYW",
+                          "from": "2004-08",
+                          "to": "2006-09",
+                          "frame": "NDE120",
+                          "characteristics": "TERRA JPP EUR SED LHD 1NDTV DCR MTM 5F"
+                        },
+                        {
+                          "vin": "JTDKC20..",
+                          "modelCode": "NDE120L-AHDYW",
+                          "from": "2004-08",
+                          "to": "2006-09",
+                          "frame": "NDE120",
+                          "characteristics": "TERRA JPP EUR HB LHD 1NDTV DCR MTM 5F 5D"
+                        },
+                        {
+                          "vin": "JTDKC28..",
+                          "modelCode": "NDE120L-AHMNW",
+                          "from": "2004-08",
+                          "to": "2006-09",
+                          "frame": "NDE120",
+                          "characteristics": "SOL JPP EUR HB LHD 1NDTV DCR MTM 5F 5D"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle": {
+      "get": {
+        "operationId": "vehicle",
+        "summary": "Get catalog categories and diagrams",
+        "description": "Call after region, year, model, and modelCode are known. Returns category tabs and diagrams for categoryId, defaulting to engine-fuel.",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NA",
+                "EU",
+                "JP",
+                "OTHER"
+              ]
+            },
+            "example": "EU"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 2006
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "COROLLA"
+          },
+          {
+            "name": "modelCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "NDE120L-AHDYW"
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "Selected category. Defaults to engine-fuel.",
+            "schema": {
+              "type": "string",
+              "default": "engine-fuel"
+            },
+            "example": "engine-fuel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog categories and diagrams for the selected vehicle/category.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleCatalogResponse"
+                },
+                "example": {
+                  "selected": {
+                    "region": "EU",
+                    "year": 2006,
+                    "model": "COROLLA",
+                    "modelCode": "NDE120L-AHDYW",
+                    "categoryId": "engine-fuel"
+                  },
+                  "categories": [
+                    {
+                      "categoryId": "engine-fuel",
+                      "label": "Engine / Fuel",
+                      "groups": ["Engine", "Water pump", "Radiator", "Alternator", "Starter", "Intake", "Exhaust", "Ignition", "Injection"]
+                    },
+                    {
+                      "categoryId": "powertrain-chassis",
+                      "label": "Powertrain / Chassis",
+                      "groups": ["Transmission", "Driveshaft", "Axle", "Wheels", "Brakes", "Steering", "Suspension"]
+                    },
+                    {
+                      "categoryId": "body",
+                      "label": "Body",
+                      "groups": ["Doors", "Windows", "Bumper", "Fuel tank", "Interior", "Seats", "Handles"]
+                    },
+                    {
+                      "categoryId": "electrical",
+                      "label": "Electrical",
+                      "groups": ["Battery", "Air conditioning", "Lights", "Audio", "Airbag", "Mirror"]
+                    }
+                  ],
+                  "diagrams": [
+                    {
+                      "diagramId": "engine-fuel-standard-tool",
+                      "name": "Standard Tool",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-standard-tool.png"
+                    },
+                    {
+                      "diagramId": "engine-fuel-partial-engine-assembly",
+                      "name": "Partial Engine Assembly",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-partial-engine-assembly.png"
+                    },
+                    {
+                      "diagramId": "engine-fuel-water-pump",
+                      "name": "Water Pump",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-water-pump.png"
+                    },
+                    {
+                      "diagramId": "engine-fuel-radiator-water-outlet",
+                      "name": "Radiator & Water Outlet",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-radiator-water-outlet.png"
+                    },
+                    {
+                      "diagramId": "engine-fuel-alternator",
+                      "name": "Alternator",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-alternator.png"
+                    },
+                    {
+                      "diagramId": "engine-fuel-starter",
+                      "name": "Starter",
+                      "image": "https://api.example.com/images/toyota/engine-fuel-starter.png"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdentifyResponse": {
+        "type": "object",
+        "required": [
+          "vin",
+          "status",
+          "items"
+        ],
+        "properties": {
+          "vin": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "candidate",
+              "notFound"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelCodeRow"
+            }
+          }
+        }
+      },
+      "SelectorResponse": {
+        "type": "object",
+        "required": [
+          "selected",
+          "options",
+          "filters",
+          "items"
+        ],
+        "properties": {
+          "selected": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "region",
+              "year",
+              "model",
+              null
+            ]
+          },
+          "options": {
+            "type": "array",
+            "description": "Main selector options for the next step: regions, years, models, or empty when model-code rows are shown.",
+            "items": {
+              "$ref": "#/components/schemas/Option"
+            }
+          },
+          "filters": {
+            "type": "array",
+            "description": "Variable characteristic filter blocks shown after region, year, and model are selected.",
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "Matching model-code rows.",
+            "items": {
+              "$ref": "#/components/schemas/ModelCodeRow"
+            }
+          }
+        }
+      },
+      "Option": {
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "properties": {
+          "value": {
+            "type": [
+              "string",
+              "integer"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Filter": {
+        "type": "object",
+        "required": [
+          "code",
+          "label",
+          "options"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Option"
+            }
+          }
+        }
+      },
+      "VehicleCatalogResponse": {
+        "type": "object",
+        "required": [
+          "selected",
+          "categories",
+          "diagrams"
+        ],
+        "properties": {
+          "selected": {
+            "type": "object",
+            "required": [
+              "region",
+              "year",
+              "model",
+              "modelCode",
+              "categoryId"
+            ],
+            "properties": {
+              "region": {
+                "type": "string"
+              },
+              "year": {
+                "type": "integer"
+              },
+              "model": {
+                "type": "string"
+              },
+              "modelCode": {
+                "type": "string"
+              },
+              "categoryId": {
+                "type": "string"
+              }
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          "diagrams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Diagram"
+            }
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "required": [
+          "categoryId",
+          "label",
+          "groups"
+        ],
+        "properties": {
+          "categoryId": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Diagram": {
+        "type": "object",
+        "required": [
+          "diagramId",
+          "name",
+          "image"
+        ],
+        "properties": {
+          "diagramId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ModelCodeRow": {
+        "type": "object",
+        "required": [
+          "modelCode",
+          "from",
+          "to",
+          "frame",
+          "characteristics"
+        ],
+        "properties": {
+          "vin": {
+            "type": "string",
+            "description": "Masked VIN prefix as shown in search results."
+          },
+          "modelCode": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "frame": {
+            "type": "string"
+          },
+          "characteristics": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
