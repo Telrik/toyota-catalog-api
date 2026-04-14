@@ -48,8 +48,6 @@
                 },
                 "example": {
                   "vin": "LVGC616Z8NG101242",
-                  "status": "candidate",
-                  "message": "Use selector to confirm the vehicle.",
                   "items": []
                 }
               }
@@ -349,7 +347,7 @@
       "get": {
         "operationId": "vehicle",
         "summary": "Get catalog categories and diagrams",
-        "description": "Call after region, year, model, and modelCode are known. Returns category tabs and diagrams for categoryId, defaulting to engine-fuel.",
+        "description": "Call after region, year, model, and modelCode are known. Returns category tabs and diagrams for categoryId, defaulting to 1.",
         "parameters": [
           {
             "name": "region",
@@ -396,12 +394,12 @@
           {
             "name": "categoryId",
             "in": "query",
-            "description": "Selected category. Defaults to engine-fuel.",
+            "description": "Selected category id. Defaults to 1, Engine / Fuel.",
             "schema": {
-              "type": "string",
-              "default": "engine-fuel"
+              "type": "integer",
+              "default": 1
             },
-            "example": "engine-fuel"
+            "example": 1
           }
         ],
         "responses": {
@@ -418,26 +416,26 @@
                     "year": 2006,
                     "model": "COROLLA",
                     "modelCode": "NDE120L-AHDYW",
-                    "categoryId": "engine-fuel"
+                    "categoryId": 1
                   },
                   "categories": [
                     {
-                      "categoryId": "engine-fuel",
+                      "categoryId": 1,
                       "label": "Engine / Fuel",
                       "groups": ["Engine", "Water pump", "Radiator", "Alternator", "Starter", "Intake", "Exhaust", "Ignition", "Injection"]
                     },
                     {
-                      "categoryId": "powertrain-chassis",
+                      "categoryId": 2,
                       "label": "Powertrain / Chassis",
                       "groups": ["Transmission", "Driveshaft", "Axle", "Wheels", "Brakes", "Steering", "Suspension"]
                     },
                     {
-                      "categoryId": "body",
+                      "categoryId": 3,
                       "label": "Body",
                       "groups": ["Doors", "Windows", "Bumper", "Fuel tank", "Interior", "Seats", "Handles"]
                     },
                     {
-                      "categoryId": "electrical",
+                      "categoryId": 4,
                       "label": "Electrical",
                       "groups": ["Battery", "Air conditioning", "Lights", "Audio", "Airbag", "Mirror"]
                     }
@@ -488,22 +486,10 @@
         "type": "object",
         "required": [
           "vin",
-          "status",
           "items"
         ],
         "properties": {
           "vin": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "exact",
-              "candidate",
-              "notFound"
-            ]
-          },
-          "message": {
             "type": "string"
           },
           "items": {
@@ -645,7 +631,7 @@
                 "type": "string"
               },
               "categoryId": {
-                "type": "string"
+                "type": "integer"
               }
             }
           },
@@ -672,7 +658,7 @@
         ],
         "properties": {
           "categoryId": {
-            "type": "string"
+            "type": "integer"
           },
           "label": {
             "type": "string"

@@ -2,10 +2,7 @@
 
 This workspace contains an OpenAPI specification for a compact Toyota catalog identification API inspired by the ToyoDIY vehicle identification and parts catalog flow.
 
-The current spec is:
-
-- `toyota.catalog.json` - current compact OpenAPI spec, version `1.1.0`
-- `toyota.catalog.v1.json` - previous snapshot of the broader v1 contract
+The current spec is `toyota.catalog.json`, a compact OpenAPI spec at version `1.1.0`.
 
 The API is designed for a UI that first identifies a vehicle, then opens a vehicle catalog with category tabs and diagram tiles.
 
@@ -47,17 +44,11 @@ Response shape:
 ```json
 {
   "vin": "LVGC616Z8NG101242",
-  "status": "candidate",
-  "message": "Use selector to confirm the vehicle.",
   "items": []
 }
 ```
 
-`status` can be:
-
-- `exact` - the API found one usable vehicle/model-code row
-- `candidate` - the API found possible matches or needs selector confirmation
-- `notFound` - no match was found
+If matching rows are found, `items` contains them. If nothing is found, `items` is an empty array.
 
 ### `GET /selector`
 
@@ -197,7 +188,7 @@ Required query parameters:
 
 Optional query parameter:
 
-- `categoryId` - defaults to `engine-fuel`
+- `categoryId` - integer category id, defaults to `1`
 
 Example:
 
@@ -208,7 +199,7 @@ GET /vehicle?region=EU&year=2006&model=COROLLA&modelCode=NDE120L-AHDYW
 To open another category:
 
 ```http
-GET /vehicle?region=EU&year=2006&model=COROLLA&modelCode=NDE120L-AHDYW&categoryId=electrical
+GET /vehicle?region=EU&year=2006&model=COROLLA&modelCode=NDE120L-AHDYW&categoryId=4
 ```
 
 Response shape:
@@ -220,11 +211,11 @@ Response shape:
     "year": 2006,
     "model": "COROLLA",
     "modelCode": "NDE120L-AHDYW",
-    "categoryId": "engine-fuel"
+    "categoryId": 1
   },
   "categories": [
     {
-      "categoryId": "engine-fuel",
+      "categoryId": 1,
       "label": "Engine / Fuel",
       "groups": ["Engine", "Water pump", "Radiator", "Alternator", "Starter", "Intake", "Exhaust", "Ignition", "Injection"]
     }
@@ -243,10 +234,10 @@ Response shape:
 
 The `/vehicle` response includes these top-level category tabs:
 
-- `engine-fuel` - Engine / Fuel
-- `powertrain-chassis` - Powertrain / Chassis
-- `body` - Body
-- `electrical` - Electrical
+- `1` - Engine / Fuel
+- `2` - Powertrain / Chassis
+- `3` - Body
+- `4` - Electrical
 
 Each category includes group labels used by the UI.
 
