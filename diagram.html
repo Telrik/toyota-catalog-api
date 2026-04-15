@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagram Spare Parts Mock</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    body { background: #f6f7f9; color: #17202a; letter-spacing: 0; }
+    .app-shell { max-width: 1380px; }
+    .panel { background: #fff; border: 1px solid #d9dee7; border-radius: 8px; }
+    .btn, .form-control, .badge { border-radius: 8px; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 8px; display: grid; place-items: center; background: #0f766e; color: #fff; font-weight: 800; }
+    .diagram-stage { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid #d9dee7; background: #eef1f5; }
+    .diagram-stage img { width: 100%; display: block; }
+    .hotspot { position: absolute; border: 2px solid #dc3545; background: rgba(220, 53, 69, .12); border-radius: 8px; }
+    .hotspot span { position: absolute; left: 0; top: -28px; background: #dc3545; color: #fff; border-radius: 8px; padding: .15rem .45rem; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+    .detail-pill { background: #eef1f5; color: #253044; border: 1px solid #dfe4ec; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <header class="bg-white border-bottom">
+    <div class="container-fluid app-shell py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="brand-mark">TC</div>
+        <div>
+          <h1 class="h4 mb-0">Diagram Parts</h1>
+          <div class="text-secondary small">Mock `/diagram` endpoint</div>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="index.html">Selector</a>
+        <a class="btn btn-outline-secondary btn-sm" href="compatibility.html">Compatibility</a>
+        <a class="btn btn-outline-secondary btn-sm" href="toyota.catalog.json">OpenAPI JSON</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-fluid app-shell py-4">
+    <section class="panel p-3 p-md-4 mb-4">
+      <div class="row g-3">
+        <div class="col-md-2"><label class="form-label fw-semibold">Region</label><input id="region" class="form-control" value="EU"></div>
+        <div class="col-md-2"><label class="form-label fw-semibold">Year</label><input id="year" class="form-control" value="1993"></div>
+        <div class="col-md-2"><label class="form-label fw-semibold">Model</label><input id="model" class="form-control" value="COROLLA"></div>
+        <div class="col-md-3"><label class="form-label fw-semibold">ModelCode</label><input id="modelCode" class="form-control" value="CE100L-AWMRSW"></div>
+        <div class="col-md-1"><label class="form-label fw-semibold">Cat.</label><input id="categoryId" class="form-control" value="1"></div>
+        <div class="col-md-2"><label class="form-label fw-semibold">Diagram</label><input id="diagramId" class="form-control" value="1102"></div>
+      </div>
+    </section>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <section class="panel p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Diagram image</h2>
+            <span class="badge text-bg-light border" id="diagramLabel">1102</span>
+          </div>
+          <div class="diagram-stage" id="stage">
+            <img id="diagramImage" src="https://placehold.co/1200x620/f2f5f8/1f2937/png?text=EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102" alt="Diagram image">
+          </div>
+        </section>
+      </div>
+      <div class="col-lg-5">
+        <section class="panel p-3 p-md-4">
+          <h2 class="h5 mb-3">Spare parts</h2>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Part number</th>
+                  <th>Description</th>
+                  <th>Params</th>
+                </tr>
+              </thead>
+              <tbody id="parts"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const spareParts = [
+      {
+        partNumber: '9091520004',
+        description: 'Filter, Oil',
+        params: [
+          { key: 'qty', value: 1 },
+          { key: 'engine', value: '2C' }
+        ],
+        coordinates: [
+          { x: 0.42, y: 0.36, width: 0.12, height: 0.1 }
+        ]
+      },
+      {
+        partNumber: '1560125010',
+        description: 'Cap Sub-Assy, Oil Filter',
+        params: [
+          { key: 'qty', value: 1 },
+          { key: 'material', value: 'steel' }
+        ],
+        coordinates: [
+          { x: 0.61, y: 0.48, width: 0.13, height: 0.11 }
+        ]
+      },
+      {
+        partNumber: '9672119023',
+        description: 'O-Ring',
+        params: [
+          { key: 'qty', value: 1 },
+          { key: 'size', value: 'standard' }
+        ],
+        coordinates: [
+          { x: 0.25, y: 0.55, width: 0.1, height: 0.09 }
+        ]
+      }
+    ];
+
+    const stage = document.getElementById('stage');
+    const parts = document.getElementById('parts');
+    const diagramLabel = document.getElementById('diagramLabel');
+
+    function render() {
+      const diagramId = document.getElementById('diagramId').value || '1102';
+      diagramLabel.textContent = diagramId;
+      stage.querySelectorAll('.hotspot').forEach((item) => item.remove());
+      parts.innerHTML = '';
+
+      spareParts.forEach((part) => {
+        const params = part.params.map((item) => `<span class="badge detail-pill me-1 mb-1">${item.key}: ${item.value}</span>`).join('');
+        parts.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td class="fw-semibold">${part.partNumber}</td>
+            <td>${part.description}</td>
+            <td>${params}</td>
+          </tr>
+        `);
+
+        part.coordinates.forEach((box) => {
+          const marker = document.createElement('div');
+          marker.className = 'hotspot';
+          marker.style.left = `${box.x * 100}%`;
+          marker.style.top = `${box.y * 100}%`;
+          marker.style.width = `${box.width * 100}%`;
+          marker.style.height = `${box.height * 100}%`;
+          marker.innerHTML = `<span>${part.partNumber}</span>`;
+          stage.appendChild(marker);
+        });
+      });
+    }
+
+    document.querySelectorAll('input').forEach((input) => input.addEventListener('input', render));
+    render();
+  </script>
+</body>
+</html>

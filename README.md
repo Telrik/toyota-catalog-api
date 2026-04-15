@@ -16,6 +16,8 @@ The API is designed for a UI that first identifies a vehicle, then opens a vehic
 6. Call `/selector?region=EU&year=2006&model=COROLLA` to get model-code rows and dynamic vehicle-characteristic filters.
 7. Optionally refine model-code rows with `params`, a key/value array such as `[{ "key": "grade", "value": "SOL" }]`.
 8. Once `region`, `year`, `model`, and `modelCode` are known, call `/vehicle` to get catalog categories and diagrams.
+9. Use `/compatibility` to find model-code rows that match a part number.
+10. Use `/diagram` to load one diagram image, its spare parts, and image coordinates.
 
 ## Endpoints
 
@@ -328,4 +330,79 @@ Expected result:
 
 ```text
 .\toyota.catalog.json: OK
+```
+
+### `GET /compatibility`
+
+Finds vehicle/model-code compatibility for a part number.
+
+```http
+GET /compatibility?partNumber=9091520004
+```
+
+Response shape:
+
+```json
+{
+  "partNumber": "9091520004",
+  "items": [
+    {
+      "region": "EU",
+      "year": "1993",
+      "model": "COROLLA",
+      "modelCode": "CE100L-AWMRSW",
+      "details": [
+        { "key": "frame", "value": "CE100" },
+        { "key": "engine", "value": "2C" },
+        { "key": "body", "value": "SED" }
+      ]
+    }
+  ]
+}
+```
+
+### `GET /diagram`
+
+Loads one diagram image with spare parts and image coordinates.
+
+Required query parameters:
+
+- `region`
+- `year`
+- `model`
+- `modelCode`
+- `categoryId`
+- `diagramId`
+
+```http
+GET /diagram?region=EU&year=1993&model=COROLLA&modelCode=CE100L-AWMRSW&categoryId=1&diagramId=1102
+```
+
+Response shape:
+
+```json
+{
+  "selected": {
+    "region": "EU",
+    "year": "1993",
+    "model": "COROLLA",
+    "modelCode": "CE100L-AWMRSW",
+    "categoryId": 1,
+    "diagramId": 1102
+  },
+  "imageUrl": "https://api.example.com/images/toyota/EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.png",
+  "spareParts": [
+    {
+      "partNumber": "9091520004",
+      "description": "Filter, Oil",
+      "params": [
+        { "key": "qty", "value": 1 },
+        { "key": "engine", "value": "2C" }
+      ],
+      "coordinates": [
+        { "x": 0.42, "y": 0.36, "width": 0.12, "height": 0.1 }
+      ]
+    }
+  ]
+}
 ```

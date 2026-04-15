@@ -182,6 +182,8 @@
             </svg>
             GitHub
           </a>
+          <a class="btn btn-outline-secondary btn-sm" href="compatibility.html">Compatibility</a>
+          <a class="btn btn-outline-secondary btn-sm" href="diagram.html">Diagram</a>
           <a class="btn btn-outline-secondary btn-sm" href="docs/index.html">Documentation</a>
           <a class="btn btn-outline-secondary btn-sm" href="toyota.catalog.json">OpenAPI JSON</a>
         </div>
@@ -255,20 +257,6 @@
             </table>
           </div>
           <div id="emptyResults" class="empty-state p-4 text-center text-secondary d-none">Select region, year, and model to show matching model-code rows.</div>
-        </section>
-
-        <section class="hidden panel p-3 p-md-4" id="catalogPanel">
-          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-            <div>
-              <div class="step-label">Catalog</div>
-              <h2 class="h5 mb-0" id="catalogTitle">Choose a model code</h2>
-            </div>
-            <span class="badge text-bg-success-subtle border border-success-subtle text-success-emphasis" id="catalogBadge">Waiting</span>
-          </div>
-
-          <ul class="nav nav-pills gap-2 mb-3" id="categoryTabs"></ul>
-          <div class="row g-3 mb-3" id="categorySummary"></div>
-          <div class="diagram-grid" id="diagramGrid"></div>
         </section>
 
       </div>
@@ -403,39 +391,6 @@
       }
     ];
 
-    const categories = [
-      { categoryId: 1, label: 'Engine / Fuel', groups: ['Engine', 'Water pump', 'Radiator', 'Alternator', 'Starter', 'Intake', 'Exhaust', 'Ignition', 'Injection'] },
-      { categoryId: 2, label: 'Powertrain / Chassis', groups: ['Transmission', 'Driveshaft', 'Axle', 'Wheels', 'Brakes', 'Steering', 'Suspension'] },
-      { categoryId: 3, label: 'Body', groups: ['Doors', 'Windows', 'Bumper', 'Fuel tank', 'Interior', 'Seats', 'Handles'] },
-      { categoryId: 4, label: 'Electrical', groups: ['Battery', 'Air conditioning', 'Lights', 'Audio', 'Airbag', 'Mirror'] }
-    ];
-
-    const diagrams = {
-      1: [
-        { diagramId: 1101, name: 'Standard Tool', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1101.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Standard+Tool' },
-        { diagramId: 1102, name: 'Partial Engine Assembly', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Engine+Assembly' },
-        { diagramId: 1603, name: 'Water Pump', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1603.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Water+Pump' },
-        { diagramId: 1604, name: 'Radiator & Water Outlet', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1604.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Radiator' },
-        { diagramId: 1901, name: 'Alternator', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1901.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Alternator' },
-        { diagramId: 1902, name: 'Starter', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1902.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Starter' }
-      ],
-      2: [
-        { diagramId: 3301, name: 'Transmission Case', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.3301.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Transmission' },
-        { diagramId: 4301, name: 'Front Axle Hub', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.4301.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Front+Axle' },
-        { diagramId: 4701, name: 'Brake Master Cylinder', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.4701.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Brakes' }
-      ],
-      3: [
-        { diagramId: 6701, name: 'Front Door Panel', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.6701.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Front+Door' },
-        { diagramId: 5201, name: 'Front Bumper', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.5201.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Bumper' },
-        { diagramId: 7701, name: 'Fuel Tank', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.7701.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Fuel+Tank' }
-      ],
-      4: [
-        { diagramId: 8401, name: 'Battery & Cable', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.8401.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Battery' },
-        { diagramId: 8111, name: 'Headlamp', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.8111.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Headlamp' },
-        { diagramId: 8701, name: 'Air Conditioner', url: 'EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.8701.html', image: 'https://placehold.co/320x180/f2f5f8/1f2937/png?text=Air+Conditioner' }
-      ]
-    };
-
     const identifyRows = [
       {
         region: 'EU',
@@ -458,12 +413,6 @@
     const filterGroups = document.getElementById('filterGroups');
     const filtersBlock = document.getElementById('filtersBlock');
     const selectedBadges = document.getElementById('selectedBadges');
-    const categoryTabs = document.getElementById('categoryTabs');
-    const categorySummary = document.getElementById('categorySummary');
-    const diagramGrid = document.getElementById('diagramGrid');
-    const catalogTitle = document.getElementById('catalogTitle');
-    const catalogBadge = document.getElementById('catalogBadge');
-
     function detailValue(row, key) {
       const item = row.details.find((detail) => detail.key === key);
       return item ? String(item.value) : '';
@@ -616,7 +565,7 @@
           <td>${row.model}</td>
           <td><button class="btn btn-link p-0 fw-semibold">${row.modelCode}</button></td>
           <td>${detailHtml}</td>
-          <td class="text-end"><button class="btn btn-sm btn-success">Open</button></td>
+          <td class="text-end"><button class="btn btn-sm btn-success">Diagram</button></td>
         `;
         tr.querySelector('button').addEventListener('click', () => openVehicle(row));
         tr.querySelector('.btn-success').addEventListener('click', () => openVehicle(row));
@@ -624,55 +573,15 @@
       });
     }
 
-    function renderCategories() {
-      if (!categoryTabs || !categorySummary || !diagramGrid) return;
-
-      categoryTabs.innerHTML = '';
-      categorySummary.innerHTML = '';
-      diagramGrid.innerHTML = '';
-
-      categories.forEach((category) => {
-        const li = document.createElement('li');
-        li.className = 'nav-item';
-        li.innerHTML = `<button class="nav-link ${state.categoryId === category.categoryId ? 'active' : ''}" type="button">${category.label}</button>`;
-        li.querySelector('button').addEventListener('click', () => {
-          state.categoryId = category.categoryId;
-          renderCategories();
-        });
-        categoryTabs.appendChild(li);
-      });
-
-      const current = categories.find((category) => category.categoryId === state.categoryId) || categories[0];
-      categorySummary.innerHTML = `
-        <div class="col-12">
-          <div class="small text-secondary mb-1">${current.label}</div>
-          <div class="category-list">${current.groups.map((item) => `<div>${item}</div>`).join('')}</div>
-        </div>
-      `;
-
-      (diagrams[state.categoryId] || []).forEach((diagram) => {
-        const tile = document.createElement('a');
-        tile.href = diagram.url;
-        tile.className = 'diagram-tile text-decoration-none text-reset d-block';
-        tile.innerHTML = `
-          <div class="diagram-art">
-            <img src="${diagram.image}" alt="${diagram.name}">
-          </div>
-          <div class="p-2">
-            <div class="fw-semibold small">${diagram.name}</div>
-            <div class="text-secondary small">Diagram ${diagram.diagramId}</div>
-          </div>
-        `;
-        diagramGrid.appendChild(tile);
-      });
-    }
-
     function openVehicle(row) {
-      state.vehicle = row;
-      state.categoryId = 1;
-      if (catalogTitle) catalogTitle.textContent = `${row.model} ${row.modelCode}`;
-      if (catalogBadge) catalogBadge.textContent = 'Loaded';
-      renderCategories();
+      const url = new URL('diagram.html', window.location.href);
+      url.searchParams.set('region', row.region);
+      url.searchParams.set('year', row.year);
+      url.searchParams.set('model', row.model);
+      url.searchParams.set('modelCode', row.modelCode);
+      url.searchParams.set('categoryId', '1');
+      url.searchParams.set('diagramId', '1102');
+      window.location.href = url.toString();
     }
 
     function identify() {
@@ -683,11 +592,6 @@
       renderFilters();
       renderBadges();
       renderRows(identifyRows);
-      if (catalogTitle) catalogTitle.textContent = 'Choose a model code';
-      if (catalogBadge) catalogBadge.textContent = 'Waiting';
-      if (categoryTabs) categoryTabs.innerHTML = '';
-      if (categorySummary) categorySummary.innerHTML = '';
-      if (diagramGrid) diagramGrid.innerHTML = '';
     }
 
     function render() {
@@ -695,10 +599,6 @@
       renderFilters();
       renderBadges();
       renderRows();
-      if (!state.vehicle) {
-        if (catalogTitle) catalogTitle.textContent = 'Choose a model code';
-        if (catalogBadge) catalogBadge.textContent = 'Waiting';
-      }
     }
 
     document.getElementById('identifyBtn').addEventListener('click', identify);
@@ -707,11 +607,6 @@
       state.params = [];
       state.vehicle = null;
       state.categoryId = 1;
-      if (categoryTabs) categoryTabs.innerHTML = '';
-      if (categorySummary) categorySummary.innerHTML = '';
-      if (diagramGrid) diagramGrid.innerHTML = '';
-      if (catalogTitle) catalogTitle.textContent = 'Choose a model code';
-      if (catalogBadge) catalogBadge.textContent = 'Waiting';
       optionTitle.textContent = 'Regions';
       optionGrid.innerHTML = '';
       render();

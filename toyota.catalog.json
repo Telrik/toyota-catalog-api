@@ -541,6 +541,139 @@
           }
         }
       }
+    },
+    "/compatibility": {
+      "get": {
+        "operationId": "compatibility",
+        "summary": "Find model-code compatibility by part number",
+        "description": "Returns the same model-code table shape used by identify and selector for a supplied part number.",
+        "parameters": [
+          {
+            "name": "partNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "9091520004"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compatible model-code rows.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompatibilityResponse"
+                },
+                "example": {
+                  "partNumber": "9091520004",
+                  "items": [
+                    {
+                      "region": "EU",
+                      "year": "1993",
+                      "model": "COROLLA",
+                      "modelCode": "CE100L-AWMRSW",
+                      "details": [
+                        { "key": "frame", "value": "CE100" },
+                        { "key": "engine", "value": "2C" },
+                        { "key": "body", "value": "SED" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diagram": {
+      "get": {
+        "operationId": "diagram",
+        "summary": "Get diagram image and spare parts",
+        "description": "Returns diagram image URL plus spare parts and normalized coordinates for locating part numbers on the image.",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "EU"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "1993"
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "COROLLA"
+          },
+          {
+            "name": "modelCode",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "CE100L-AWMRSW"
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" },
+            "example": 1
+          },
+          {
+            "name": "diagramId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" },
+            "example": 1102
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diagram with spare parts and image coordinates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagramResponse"
+                },
+                "example": {
+                  "selected": {
+                    "region": "EU",
+                    "year": "1993",
+                    "model": "COROLLA",
+                    "modelCode": "CE100L-AWMRSW",
+                    "categoryId": 1,
+                    "diagramId": 1102
+                  },
+                  "imageUrl": "https://api.example.com/images/toyota/EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.png",
+                  "spareParts": [
+                    {
+                      "partNumber": "9091520004",
+                      "description": "Filter, Oil",
+                      "params": [
+                        { "key": "qty", "value": 1 },
+                        { "key": "engine", "value": "2C" }
+                      ],
+                      "coordinates": [
+                        { "x": 0.42, "y": 0.36, "width": 0.12, "height": 0.1 }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -777,6 +910,108 @@
           },
           "details": {
             "type": "array"
+          }
+        }
+      },
+      "CompatibilityResponse": {
+        "type": "object",
+        "required": [
+          "partNumber",
+          "items"
+        ],
+        "properties": {
+          "partNumber": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelCodeRow"
+            }
+          }
+        }
+      },
+      "DiagramResponse": {
+        "type": "object",
+        "required": [
+          "selected",
+          "imageUrl",
+          "spareParts"
+        ],
+        "properties": {
+          "selected": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "spareParts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SparePart"
+            }
+          }
+        }
+      },
+      "SparePart": {
+        "type": "object",
+        "required": [
+          "partNumber",
+          "description",
+          "params",
+          "coordinates"
+        ],
+        "properties": {
+          "partNumber": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Detail"
+            }
+          },
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coordinate"
+            }
+          }
+        }
+      },
+      "Coordinate": {
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ],
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
           }
         }
       },

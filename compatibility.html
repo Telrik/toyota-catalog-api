@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Part Compatibility Mock</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    body { background: #f6f7f9; color: #17202a; letter-spacing: 0; }
+    .app-shell { max-width: 1280px; }
+    .panel { background: #fff; border: 1px solid #d9dee7; border-radius: 8px; }
+    .btn, .form-control, .badge { border-radius: 8px; }
+    .detail-pill { background: #eef1f5; color: #253044; border: 1px solid #dfe4ec; font-weight: 500; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 8px; display: grid; place-items: center; background: #0f766e; color: #fff; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <header class="bg-white border-bottom">
+    <div class="container-fluid app-shell py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="brand-mark">TC</div>
+        <div>
+          <h1 class="h4 mb-0">Part Compatibility</h1>
+          <div class="text-secondary small">Mock `/compatibility` endpoint</div>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="index.html">Selector</a>
+        <a class="btn btn-outline-secondary btn-sm" href="diagram.html">Diagram</a>
+        <a class="btn btn-outline-secondary btn-sm" href="toyota.catalog.json">OpenAPI JSON</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-fluid app-shell py-4">
+    <section class="panel p-3 p-md-4 mb-4">
+      <label for="partNumber" class="form-label fw-semibold">Part number</label>
+      <div class="input-group">
+        <input id="partNumber" class="form-control" value="9091520004">
+        <button id="searchBtn" class="btn btn-success" type="button">Check compatibility</button>
+      </div>
+      <div class="form-text">Returns the same model-code table shape as `/identify` and `/selector`.</div>
+    </section>
+
+    <section class="panel p-3 p-md-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Compatible model codes</h2>
+        <span id="count" class="badge text-bg-light border">0 rows</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Region</th>
+              <th>Year</th>
+              <th>Model</th>
+              <th>ModelCode</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const mockRows = [
+      {
+        region: 'EU',
+        year: '1993',
+        model: 'COROLLA',
+        modelCode: 'CE100L-AWMRSW',
+        details: [
+          { key: 'frame', value: 'CE100' },
+          { key: 'engine', value: '2C' },
+          { key: 'body', value: 'SED' }
+        ]
+      },
+      {
+        region: 'EU',
+        year: '2006',
+        model: 'COROLLA',
+        modelCode: 'NDE120L-AHDYW',
+        details: [
+          { key: 'frame', value: 'NDE120' },
+          { key: 'engine', value: '1NDTV' },
+          { key: 'transmission', value: 'MTM' }
+        ]
+      },
+      {
+        region: 'JP',
+        year: '2010',
+        model: 'YARIS',
+        modelCode: 'KSP90-AHXNK',
+        details: [
+          { key: 'frame', value: 'KSP90' },
+          { key: 'engine', value: '1KRFE' },
+          { key: 'body', value: 'HB' }
+        ]
+      }
+    ];
+
+    const rows = document.getElementById('rows');
+    const count = document.getElementById('count');
+
+    function render() {
+      rows.innerHTML = '';
+      mockRows.forEach((row) => {
+        const details = row.details.map((item) => `<span class="badge detail-pill me-1 mb-1">${item.key}: ${item.value}</span>`).join('');
+        rows.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${row.region}</td>
+            <td>${row.year}</td>
+            <td>${row.model}</td>
+            <td class="fw-semibold">${row.modelCode}</td>
+            <td>${details}</td>
+          </tr>
+        `);
+      });
+      count.textContent = `${mockRows.length} rows`;
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', render);
+    render();
+  </script>
+</body>
+</html>
