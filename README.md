@@ -46,18 +46,23 @@ Response shape:
   "vin": "LVGC616Z8NG101242",
   "items": [
     {
-      "vin": "LVGC616Z8NG101242",
+      "region": "EU",
+      "year": "2022",
+      "model": "TOYOTA MODEL",
       "modelCode": "C616Z-EXAMPLE",
-      "from": "2021-01",
-      "to": "2024-12",
-      "frame": "C616Z",
-      "characteristics": "PARTIAL VIN DECODE"
+      "details": [
+        { "key": "decode", "value": "partial" },
+        { "key": "frame", "value": "C616Z" },
+        { "key": "production", "value": "2021-2024" }
+      ]
     }
   ]
 }
 ```
 
 If the VIN or frame value is fully decoded, `items` contains the matching model-code row or rows. If the value is only partially decoded, `items` contains all possible model-code rows for that identifier. If nothing is found, `items` is an empty array.
+
+The `items` table uses the same columns as `/selector`: `region`, `year`, `model`, `modelCode`, and `details`. `details` is an array of key/value attributes.
 
 ### `GET /selector`
 
@@ -160,14 +165,27 @@ Example model-code row:
 
 ```json
 {
-  "vin": "JTDBC20..",
+  "region": "EU",
+  "year": "2006",
+  "model": "COROLLA",
   "modelCode": "NDE120L-AHDYW",
-  "from": "2004-08",
-  "to": "2006-09",
-  "frame": "NDE120",
-  "characteristics": "TERRA JPP EUR SED LHD 1NDTV DCR MTM 5F"
+  "details": [
+    { "key": "vin", "value": "JTDBC20.." },
+    { "key": "frame", "value": "NDE120" },
+    { "key": "grade", "value": "TERRA" },
+    { "key": "product", "value": "JPP" },
+    { "key": "destination", "value": "EUR" },
+    { "key": "body", "value": "SED" },
+    { "key": "driversPosition", "value": "LHD" },
+    { "key": "engine", "value": "1NDTV" },
+    { "key": "fuelSystem", "value": "DCR" },
+    { "key": "transmission", "value": "MTM" },
+    { "key": "gearShiftType", "value": "5F" }
+  ]
 }
 ```
+
+The row is intentionally compact. Extra values such as VIN prefix, frame, grade, body, engine, transmission, and production notes belong inside `details`.
 
 #### Refining With Dynamic Params
 

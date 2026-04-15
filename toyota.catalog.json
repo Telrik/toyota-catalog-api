@@ -51,12 +51,15 @@
                   "vin": "LVGC616Z8NG101242",
                   "items": [
                     {
-                      "vin": "LVGC616Z8NG101242",
+                      "region": "EU",
+                      "year": "2022",
+                      "model": "TOYOTA MODEL",
                       "modelCode": "C616Z-EXAMPLE",
-                      "from": "2021-01",
-                      "to": "2024-12",
-                      "frame": "C616Z",
-                      "characteristics": "PARTIAL VIN DECODE"
+                      "details": [
+                        { "key": "decode", "value": "partial" },
+                        { "key": "frame", "value": "C616Z" },
+                        { "key": "production", "value": "2021-2024" }
+                      ]
                     }
                   ]
                 }
@@ -320,28 +323,63 @@
                       ],
                       "items": [
                         {
-                          "vin": "JTDBC20..",
+                          "region": "EU",
+                          "year": "2006",
+                          "model": "COROLLA",
                           "modelCode": "NDE120L-AHDYW",
-                          "from": "2004-08",
-                          "to": "2006-09",
-                          "frame": "NDE120",
-                          "characteristics": "TERRA JPP EUR SED LHD 1NDTV DCR MTM 5F"
+                          "details": [
+                            { "key": "vin", "value": "JTDBC20.." },
+                            { "key": "frame", "value": "NDE120" },
+                            { "key": "grade", "value": "TERRA" },
+                            { "key": "product", "value": "JPP" },
+                            { "key": "destination", "value": "EUR" },
+                            { "key": "body", "value": "SED" },
+                            { "key": "driversPosition", "value": "LHD" },
+                            { "key": "engine", "value": "1NDTV" },
+                            { "key": "fuelSystem", "value": "DCR" },
+                            { "key": "transmission", "value": "MTM" },
+                            { "key": "gearShiftType", "value": "5F" }
+                          ]
                         },
                         {
-                          "vin": "JTDKC20..",
+                          "region": "EU",
+                          "year": "2006",
+                          "model": "COROLLA",
                           "modelCode": "NDE120L-AHDYW",
-                          "from": "2004-08",
-                          "to": "2006-09",
-                          "frame": "NDE120",
-                          "characteristics": "TERRA JPP EUR HB LHD 1NDTV DCR MTM 5F 5D"
+                          "details": [
+                            { "key": "vin", "value": "JTDKC20.." },
+                            { "key": "frame", "value": "NDE120" },
+                            { "key": "grade", "value": "TERRA" },
+                            { "key": "product", "value": "JPP" },
+                            { "key": "destination", "value": "EUR" },
+                            { "key": "body", "value": "HB" },
+                            { "key": "driversPosition", "value": "LHD" },
+                            { "key": "engine", "value": "1NDTV" },
+                            { "key": "fuelSystem", "value": "DCR" },
+                            { "key": "transmission", "value": "MTM" },
+                            { "key": "gearShiftType", "value": "5F" },
+                            { "key": "doors", "value": "5D" }
+                          ]
                         },
                         {
-                          "vin": "JTDKC28..",
+                          "region": "EU",
+                          "year": "2006",
+                          "model": "COROLLA",
                           "modelCode": "NDE120L-AHMNW",
-                          "from": "2004-08",
-                          "to": "2006-09",
-                          "frame": "NDE120",
-                          "characteristics": "SOL JPP EUR HB LHD 1NDTV DCR MTM 5F 5D"
+                          "details": [
+                            { "key": "vin", "value": "JTDKC28.." },
+                            { "key": "frame", "value": "NDE120" },
+                            { "key": "grade", "value": "SOL" },
+                            { "key": "product", "value": "JPP" },
+                            { "key": "destination", "value": "EUR" },
+                            { "key": "body", "value": "HB" },
+                            { "key": "driversPosition", "value": "LHD" },
+                            { "key": "engine", "value": "1NDTV" },
+                            { "key": "fuelSystem", "value": "DCR" },
+                            { "key": "transmission", "value": "MTM" },
+                            { "key": "gearShiftType", "value": "5F" },
+                            { "key": "doors", "value": "5D" }
+                          ]
                         }
                       ]
                     }
@@ -715,32 +753,41 @@
       },
       "ModelCodeRow": {
         "type": "object",
-        "required": [
-          "modelCode",
-          "from",
-          "to",
-          "frame",
-          "characteristics"
-        ],
         "properties": {
-          "vin": {
-            "type": "string",
-            "description": "Masked VIN prefix as shown in search results."
+          "region": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
           },
           "modelCode": {
             "type": "string"
           },
-          "from": {
+          "details": {
+            "type": "array"
+          }
+        }
+      },
+      "Detail": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
             "type": "string"
           },
-          "to": {
-            "type": "string"
-          },
-          "frame": {
-            "type": "string"
-          },
-          "characteristics": {
-            "type": "string"
+          "value": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean"
+            ]
           }
         }
       }
