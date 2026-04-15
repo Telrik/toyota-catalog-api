@@ -16,6 +16,7 @@
       "get": {
         "operationId": "identify",
         "summary": "Search by VIN or frame",
+        "description": "Returns model-code rows for the submitted VIN or frame value. If the identifier is not fully decoded, items contains all possible model-code rows. If nothing is found, items is empty.",
         "parameters": [
           {
             "name": "vin",
@@ -48,7 +49,16 @@
                 },
                 "example": {
                   "vin": "LVGC616Z8NG101242",
-                  "items": []
+                  "items": [
+                    {
+                      "vin": "LVGC616Z8NG101242",
+                      "modelCode": "C616Z-EXAMPLE",
+                      "from": "2021-01",
+                      "to": "2024-12",
+                      "frame": "C616Z",
+                      "characteristics": "PARTIAL VIN DECODE"
+                    }
+                  ]
                 }
               }
             }
@@ -442,33 +452,39 @@
                   ],
                   "diagrams": [
                     {
-                      "diagramId": "engine-fuel-standard-tool",
+                      "diagramId": 1101,
                       "name": "Standard Tool",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1101.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-standard-tool.png"
                     },
                     {
-                      "diagramId": "engine-fuel-partial-engine-assembly",
+                      "diagramId": 1102,
                       "name": "Partial Engine Assembly",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-partial-engine-assembly.png"
                     },
                     {
-                      "diagramId": "engine-fuel-water-pump",
+                      "diagramId": 1603,
                       "name": "Water Pump",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1603.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-water-pump.png"
                     },
                     {
-                      "diagramId": "engine-fuel-radiator-water-outlet",
+                      "diagramId": 1604,
                       "name": "Radiator & Water Outlet",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1604.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-radiator-water-outlet.png"
                     },
                     {
-                      "diagramId": "engine-fuel-alternator",
+                      "diagramId": 1901,
                       "name": "Alternator",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1901.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-alternator.png"
                     },
                     {
-                      "diagramId": "engine-fuel-starter",
+                      "diagramId": 1902,
                       "name": "Starter",
+                      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1902.html",
                       "image": "https://api.example.com/images/toyota/engine-fuel-starter.png"
                     }
                   ]
@@ -484,6 +500,7 @@
     "schemas": {
       "IdentifyResponse": {
         "type": "object",
+        "description": "VIN/frame lookup result. Partial decodes return every possible model-code row in items. Empty items means no rows were found.",
         "required": [
           "vin",
           "items"
@@ -676,14 +693,19 @@
         "required": [
           "diagramId",
           "name",
+          "url",
           "image"
         ],
         "properties": {
           "diagramId": {
-            "type": "string"
+            "type": "integer"
           },
           "name": {
             "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Full diagram page URL/path, for example EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.html."
           },
           "image": {
             "type": "string",

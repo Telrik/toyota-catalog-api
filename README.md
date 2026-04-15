@@ -44,11 +44,20 @@ Response shape:
 ```json
 {
   "vin": "LVGC616Z8NG101242",
-  "items": []
+  "items": [
+    {
+      "vin": "LVGC616Z8NG101242",
+      "modelCode": "C616Z-EXAMPLE",
+      "from": "2021-01",
+      "to": "2024-12",
+      "frame": "C616Z",
+      "characteristics": "PARTIAL VIN DECODE"
+    }
+  ]
 }
 ```
 
-If matching rows are found, `items` contains them. If nothing is found, `items` is an empty array.
+If the VIN or frame value is fully decoded, `items` contains the matching model-code row or rows. If the value is only partially decoded, `items` contains all possible model-code rows for that identifier. If nothing is found, `items` is an empty array.
 
 ### `GET /selector`
 
@@ -222,13 +231,16 @@ Response shape:
   ],
   "diagrams": [
     {
-      "diagramId": "engine-fuel-water-pump",
-      "name": "Water Pump",
-      "image": "https://api.example.com/images/toyota/engine-fuel-water-pump.png"
+      "diagramId": 1102,
+      "name": "Partial Engine Assembly",
+      "url": "EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.html",
+      "image": "https://api.example.com/images/toyota/engine-fuel-partial-engine-assembly.png"
     }
   ]
 }
 ```
+
+`diagramId` is an integer, such as `1102`. `url` is the full diagram page URL/path, for example `EU.1993.TOYOTA_COROLLA.CE100L-AWMRSW.1102.html`. `image` is the preview image used for the diagram tile.
 
 ## Catalog Categories
 
