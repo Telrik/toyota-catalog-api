@@ -108,11 +108,20 @@
           {
             "name": "params",
             "in": "query",
-            "description": "Optional characteristic filters as key:value pairs separated by commas, for example grade:SOL,body:SED,engine:1NDTV,transmission:MTM.",
+            "description": "Optional characteristic filters as key/value objects.",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Detail"
+              }
             },
-            "example": "grade:SOL,body:SED,engine:1NDTV"
+            "example": [
+              { "key": "grade", "value": "SOL" },
+              { "key": "body", "value": "SED" },
+              { "key": "engine", "value": "1NDTV" }
+            ]
           }
         ],
         "responses": {

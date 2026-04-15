@@ -14,7 +14,7 @@ The API is designed for a UI that first identifies a vehicle, then opens a vehic
 4. Call `/selector?region=EU` to get years for that region.
 5. Call `/selector?region=EU&year=2006` to get models for that region and year.
 6. Call `/selector?region=EU&year=2006&model=COROLLA` to get model-code rows and dynamic vehicle-characteristic filters.
-7. Optionally refine model-code rows with `params`, for example `grade:SOL,body:SED,engine:1NDTV`.
+7. Optionally refine model-code rows with `params`, a key/value array such as `[{ "key": "grade", "value": "SOL" }]`.
 8. Once `region`, `year`, `model`, and `modelCode` are known, call `/vehicle` to get catalog categories and diagrams.
 
 ## Endpoints
@@ -189,10 +189,14 @@ The row is intentionally compact. Extra values such as VIN prefix, frame, grade,
 
 #### Refining With Dynamic Params
 
-Characteristic filters can be selected with the `params` query string.
+Characteristic filters can be selected with `params`, a key/value array.
 
-```http
-GET /selector?region=EU&year=2006&model=COROLLA&params=grade:SOL,body:SED,engine:1NDTV
+```json
+[
+  { "key": "grade", "value": "SOL" },
+  { "key": "body", "value": "SED" },
+  { "key": "engine", "value": "1NDTV" }
+]
 ```
 
 The API should use these values to narrow:
@@ -200,7 +204,7 @@ The API should use these values to narrow:
 - returned filter options
 - returned model-code rows
 
-The spec leaves `params` as a compact string because the available filters are not fixed. Different vehicles can expose different groups.
+The available filter keys are dynamic because different vehicles can expose different groups.
 
 ### `GET /vehicle`
 
